@@ -1,0 +1,10 @@
+# Preset: Vue 3 / TypeScript / Vitest (front-end)
+sensors:
+  contrato: "bash harness/constitution-check.sh"
+  build:    "npm run type-check"
+  gate:     "npm run lint:check"
+  eval:     "npm run test:cov"
+coverage:
+  source: "coverage/coverage-summary.json"
+  field:  "lines"
+  min:    80

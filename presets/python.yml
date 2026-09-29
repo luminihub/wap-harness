@@ -1,0 +1,10 @@
+# Preset: Python / pytest (back-end)
+sensors:
+  contrato: "bash harness/constitution-check.sh"
+  build:    "mypy ."
+  gate:     "ruff check ."
+  eval:     "pytest --cov --cov-report=json"
+coverage:
+  source: "coverage.json"
+  field:  "percent_covered"
+  min:    80

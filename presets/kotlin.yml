@@ -1,0 +1,12 @@
+# Preset: Kotlin / Spring Boot / Gradle (back-end)
+# NOTE: coverage display não é lido em v0 (jacoco é XML); o gate segue
+# válido — gradle falha o eval abaixo do limite e isso já reprova o gate.
+sensors:
+  contrato: "bash harness/constitution-check.sh"
+  build:    "./gradlew compileKotlin"
+  gate:     "./gradlew ktlintCheck"
+  eval:     "./gradlew test jacocoTestReport"
+coverage:
+  source: "build/reports/jacoco/test/jacocoTestReport.xml"
+  field:  "LINE"
+  min:    80
