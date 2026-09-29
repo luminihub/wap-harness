@@ -13,7 +13,7 @@ mesmo em projeto back.
 ## Instalação (por projeto)
 
 ```bash
-specify extension add harness --from <url-deste-repo>
+specify extension add harness --from https://github.com/luminihub/wap-harness
 /harness-setup --vue        # ou --kotlin / --python / (sem flag = detecta)
 ```
 
