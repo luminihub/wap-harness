@@ -1,0 +1,18 @@
+# wap-harness — gate configuration.
+# Copied to ./harness.config.yml on install, then specialized by /harness-setup.
+#
+# The gate runs these four commands IN ORDER and passes only if every one
+# exits 0. Pass/fail is decided solely by exit code. Coverage % is read for
+# DISPLAY only — the eval sensor itself is responsible for failing below the
+# threshold (e.g. Vitest thresholds, jacoco rules).
+
+sensors:
+  contrato: "bash harness/constitution-check.sh"   # objective rule checks (grep)
+  build:    ""                                      # type-check / compile
+  gate:     ""                                      # lint
+  eval:     ""                                      # tests + coverage
+
+coverage:
+  source: ""        # path to the coverage report the eval sensor produces
+  field:  "lines"   # which metric to display
+  min:    80        # display-only threshold (controls colour/label, not pass/fail)
