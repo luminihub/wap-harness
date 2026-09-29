@@ -35,9 +35,9 @@ lado do projeto.
 
 | comando | quando | o quê |
 |---|---|---|
-| `speckit.harness.gate` | hook `after_implement` (auto) | roda o gate, reporta; nunca corrige |
-| `speckit.harness.setup` | 1x, na instalação | escreve o `harness.config.yml`, semeia arquivos |
-| `speckit.harness.patterns` | 1x, após o 1º implement | extrai padrões do próprio código do projeto |
+| `/speckit-harness-gate` | hook `after_implement` (auto) | roda o gate, reporta; nunca corrige |
+| `/speckit-harness-setup` | 1x, na instalação | escreve o `harness.config.yml`, semeia arquivos |
+| `/speckit-harness-patterns` | 1x, após o 1º implement | extrai padrões do próprio código do projeto |
 
 ## O gate (`harness.config.yml`)
 
