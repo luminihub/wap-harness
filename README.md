@@ -14,12 +14,12 @@ mesmo em projeto back.
 
 ```bash
 specify extension add harness --from https://github.com/luminihub/wap-harness
-/harness-setup --vue        # ou --kotlin / --python / (sem flag = detecta)
+/speckit-harness-setup --vue        # ou --kotlin / --python / (sem flag = detecta)
 ```
 
 O `extension add` copia a extensão pra `.specify/extensions/harness/` e o Spec
 Kit pluga os comandos e o hook `after_implement` no seu agente. O
-`/harness-setup` escreve o `harness.config.yml` da stack e semeia os arquivos do
+`/speckit-harness-setup` escreve o `harness.config.yml` da stack e semeia os arquivos do
 lado do projeto.
 
 ## Ciclo do dia a dia (automático daqui em diante)
@@ -28,7 +28,7 @@ lado do projeto.
 /speckit-constitution
 /speckit-specify → /speckit-plan → /speckit-tasks → /speckit-implement
    └─ gate dispara no after_implement → verde / vermelho
-/harness-patterns    ← 1x, após o primeiro implement, preenche docs/patterns.md
+/speckit-harness-patterns    ← 1x, após o primeiro implement, preenche docs/patterns.md
 ```
 
 ## Comandos
