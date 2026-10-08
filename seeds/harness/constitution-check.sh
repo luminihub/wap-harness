@@ -16,6 +16,10 @@ fail() { echo "constitution-check: $1" >&2; exit 1; }
 #   if grep -rEn '#[0-9a-fA-F]{6}' src --include='*.vue' --include='*.scss' \
 #        | grep -v 'variables.scss'; then fail "hardcoded hex colour"; fi
 #
+# React: no hardcoded hex colour outside the token file
+#   if grep -rEn '#[0-9a-fA-F]{6}' src --include='*.tsx' --include='*.css' \
+#        | grep -v 'tokens.css'; then fail "hardcoded hex colour"; fi
+#
 # TS: no explicit any that slipped past config/comments
 #   if grep -rn ': any' src; then fail "explicit any found"; fi
 #

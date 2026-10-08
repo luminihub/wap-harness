@@ -5,6 +5,7 @@ Specializes the harness for this project's stack. Run **once**, right after
 
 ```
 /harness-setup --vue      # Vue 3 / TS / Vitest
+/harness-setup --react    # React 19 / TS / Vite / Vitest
 /harness-setup --kotlin   # Kotlin / Spring Boot / Gradle
 /harness-setup --python   # Python / pytest
 /harness-setup            # no flag → detect the stack (see below)
@@ -16,8 +17,9 @@ referenced below live inside it.
 ## What this command does
 
 1. **Resolve the stack.**
-   - If a flag is given (`--vue` / `--kotlin` / `--python`), use it.
+   - If a flag is given (`--vue` / `--react` / `--kotlin` / `--python`), use it.
    - If no flag, detect: `package.json` with a `vue` dep → vue;
+     `package.json` with a `react` dep → react;
      `build.gradle` / `build.gradle.kts` → kotlin;
      `pyproject.toml` / `requirements.txt` → python.
    - If detection is ambiguous or finds nothing, ask the developer which stack
@@ -42,7 +44,7 @@ referenced below live inside it.
    If no constitution exists yet, tell the developer to run
    `/speckit-constitution` first.
 
-5. **`--vue` only — design system.** Copy `assets/design-system.md` →
+5. **`--vue` / `--react` only — design system.** Copy `assets/design-system.md` →
    `docs/design-system.md`, and record which version was copied (write a
    `<!-- wap-design-system: v<N> -->` stamp at the top, matching the version in
    `assets/design-system.md`). This is a **pinned** copy. It is updated only by

@@ -1,0 +1,15 @@
+# Preset: React 19 / TypeScript / Vite / Vitest (front-end)
+# Espera no package.json:
+#   "type-check": "tsc -b --noEmit"
+#   "lint:check": "eslint ."
+#   "test:cov":   "vitest run --coverage"
+# e no vitest.config: coverage.reporter incluindo 'json-summary' + thresholds.
+sensors:
+  contrato: "bash harness/constitution-check.sh"
+  build:    "npm run type-check"
+  gate:     "npm run lint:check"
+  eval:     "npm run test:cov"
+coverage:
+  source: "coverage/coverage-summary.json"
+  field:  "lines"
+  min:    80
