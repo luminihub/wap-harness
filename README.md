@@ -6,7 +6,7 @@ build/tipo, lint, testes+cobertura — e reporta verde/vermelho. É um validador
 **não** um loop autônomo: vermelho volta pra decisão humana.
 
 Independente de stack: os quatro sensores são slots nomeados, preenchidos pelo
-`harness.config.yml`. Vêm presets pra **Vue**, **Kotlin** e **Python**. O motor
+`harness.config.yml`. Vêm presets pra **Vue**, **React**, **Kotlin** e **Python**. O motor
 do gate é **shell** (bash + PowerShell) — sem dependência permanente de Node,
 mesmo em projeto back.
 
@@ -14,7 +14,7 @@ mesmo em projeto back.
 
 ```bash
 specify extension add harness --from https://github.com/luminihub/wap-harness
-/speckit-harness-setup --vue        # ou --kotlin / --python / (sem flag = detecta)
+/speckit-harness-setup --vue        # ou --react / --kotlin / --python / (sem flag = detecta)
 ```
 
 O `extension add` copia a extensão pra `.specify/extensions/harness/` e o Spec
@@ -68,8 +68,8 @@ wap-harness/
 ├── scripts/
 │   ├── bash/gate.sh         # o motor + read-coverage.sh
 │   └── powershell/gate.ps1
-├── presets/                 # vue.yml · kotlin.yml · python.yml
-├── assets/design-system.md  # design system da WAP, fixado (só o --vue copia)
+├── presets/                 # vue.yml · react.yml · kotlin.yml · python.yml
+├── assets/design-system.md  # design system da WAP, fixado (só --vue / --react copiam)
 └── seeds/                   # copiado pro projeto pelo setup
     ├── harness/             # README, evaluator-checklist, constitution-check.sh
     ├── docs/patterns.md     # template vazio
