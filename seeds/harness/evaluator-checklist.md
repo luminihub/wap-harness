@@ -19,6 +19,9 @@
 
 ## Tests prove behaviour
 
+- [ ] The test was written **before** the code (TDD): for a bug, there is a test
+      that reproduces it and was seen failing before the fix; for a feature, the
+      test describes the expected behaviour.
 - [ ] The task's tests would fail if the behaviour were reverted — they test
       the behaviour, not merely that a function exists or doesn't throw.
 - [ ] Tests assert on observable output (return values, emitted events, HTTP
