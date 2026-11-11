@@ -2,7 +2,8 @@
 
 Runs the wap-harness gate for the work just implemented and reports the result.
 Wired to the `after_implement` hook, so it runs **automatically** at the end of
-`/speckit-implement`. It can also be invoked manually as `/harness-gate`.
+`/speckit-implement`. It can also be invoked manually as `/speckit-harness-gate` (or run the script
+directly — see `harness/README.md` — before a commit or in the PR workflow).
 
 ## What this command does
 
@@ -18,15 +19,19 @@ Wired to the `after_implement` hook, so it runs **automatically** at the end of
 - **This is a validator, not a fixer.** It runs the sensors once and reports.
   It NEVER edits code, re-runs in a loop, or tries to make a red result green.
 - **On red:** surface the failing sensor and the path to its log
-  (`/tmp/harness-<sensor>.log`), then **stop and return control to the
+  (`$TMPDIR/harness-<sensor>.log`, `/tmp` by default), then **stop and return control to the
   developer.** The developer (or a separate builder step they trigger) decides
   what to do next. Do not auto-correct.
 - **The exit code is the truth.** Exit 0 = pass, exit 1 = fail, exit 2 = config
-  missing (tell the developer to run `/harness-setup`). Do not re-interpret a
+  missing (tell the developer to run `/speckit-harness-setup`). Do not re-interpret a
   non-zero exit as success because the output "looks fine".
 - **Never lower a threshold or edit `harness.config.yml`** to make the gate
   pass. If a sensor command is wrong, that is a setup problem to raise, not to
   paper over.
+
+- **`skip` is not a pass.** A sensor set to `skip` shows as "pulado" and the
+  final line says "verde — com sensor pulado: …". Always tell the developer
+  which sensors were skipped; never report it as "all tests passed".
 
 ## Ordering note
 

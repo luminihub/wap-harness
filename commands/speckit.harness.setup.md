@@ -4,12 +4,18 @@ Specializes the harness for this project's stack. Run **once**, right after
 `specify extension add harness`. Invoked as:
 
 ```
-/harness-setup --vue      # Vue 3 / TS / Vitest
-/harness-setup --react    # React 19 / TS / Vite / Vitest
-/harness-setup --kotlin   # Kotlin / Spring Boot / Gradle
-/harness-setup --python   # Python / pytest
-/harness-setup            # no flag → detect the stack (see below)
+/speckit-harness-setup --vue            # Vue 3 / TS / Vitest
+/speckit-harness-setup --react          # React 19 / TS / Vite / Vitest
+/speckit-harness-setup --kotlin         # Kotlin / Spring Boot / Gradle
+/speckit-harness-setup --kotlin-maven   # Kotlin / Spring Boot / Maven
+/speckit-harness-setup --python         # Python / pytest
+/speckit-harness-setup                  # no flag → detect the stack (see below)
 ```
+
+(The command name follows the agent's `invoke_separator` in
+`.specify/integration.json`: `/speckit-harness-setup` with `-`,
+`/speckit.harness.setup` with `.`. Use the same form when you mention the other
+harness commands to the developer.)
 
 The extension folder is at `.specify/extensions/harness/`. All source files
 referenced below live inside it.
@@ -17,48 +23,75 @@ referenced below live inside it.
 ## What this command does
 
 1. **Resolve the stack.**
-   - If a flag is given (`--vue` / `--react` / `--kotlin` / `--python`), use it.
+   - If a flag is given, use it.
    - If no flag, detect: `package.json` with a `vue` dep → vue;
      `package.json` with a `react` dep → react;
-     `build.gradle` / `build.gradle.kts` → kotlin;
+     `pom.xml` → kotlin-maven; `build.gradle` / `build.gradle.kts` → kotlin;
      `pyproject.toml` / `requirements.txt` → python.
    - If detection is ambiguous or finds nothing, ask the developer which stack
      to use. Never guess silently.
 
 2. **Write `harness.config.yml`** at the project root by copying
    `presets/<stack>.yml`. This overwrites the generic `harness.config.yml` that
-   `extension add` created from `config-template.yml`. Show the developer the
-   four resolved sensor commands and let them confirm/adjust.
+   `extension add` created from `config-template.yml`. Then **check each sensor
+   against what the project really has** before showing it:
+   - **vue / react:** read `scripts` in `package.json`. If the preset's script
+     name is missing but an equivalent exists, propose the existing one
+     (e.g. `typecheck` for `type-check`, `lint` for `lint:check`). If there is no
+     test script / no Vitest yet, propose `eval: skip` and an empty
+     `coverage.source`.
+   - **kotlin-maven:** read `pom.xml`. No `ktlint-maven-plugin` (or detekt) →
+     propose `gate: skip`. No `jacoco-maven-plugin` → propose `eval: "mvn -B test"`
+     and an empty `coverage.source`. If the project requires a specific JDK
+     (`java.version` / `maven.compiler.release` / `kotlin.compiler.jvmTarget` in
+     the pom, or a note in CLAUDE.md/README), fill `env.JAVA_HOME`.
+   - **kotlin (Gradle):** same checks for `ktlint` / `jacoco` in the build file.
+   - Show the developer the four resolved sensor commands (and any `skip` /
+     `env`) and let them confirm/adjust. `skip` is shown by the gate as
+     "pulado" — it never looks like a passing suite.
 
 3. **Seed the harness files** (only if not already present — never clobber):
    - `seeds/harness/` → `harness/` (`README.md`, `evaluator-checklist.md`,
      `constitution-check.sh`).
-   - `seeds/docs/patterns.md` → `docs/patterns.md` (empty template; filled
-     later by `/harness-patterns`).
+   - **Patterns file:** if `.specify/memory/patterns.md` already exists (the
+     usual place in WAP projects, referenced by the constitution), use it and
+     do not create another one. Otherwise copy `seeds/docs/patterns.md` →
+     `.specify/memory/patterns.md`. Record the chosen path in
+     `harness/README.md`.
 
 4. **Merge the gate article into the constitution.** Take
    `seeds/constitution-article.md` and add it to
    `.specify/memory/constitution.md` as a new article (or update the existing
-   guardrails article to reference `scripts/gate.sh` and
+   guardrails article to reference the gate script and
    `harness/evaluator-checklist.md`). Bump the constitution version (MINOR).
    If no constitution exists yet, tell the developer to run
    `/speckit-constitution` first.
 
-5. **`--vue` / `--react` only — design system.** Copy `assets/design-system.md` →
-   `docs/design-system.md`, and record which version was copied (write a
-   `<!-- wap-design-system: v<N> -->` stamp at the top, matching the version in
-   `assets/design-system.md`). This is a **pinned** copy. It is updated only by
-   `/harness-update-design`, never automatically. For `--kotlin` / `--python`,
-   skip this step (no UI).
+5. **`--vue` / `--react` only — design system.** First look for a design system
+   the project already has (`design.md`, `DESIGN.md`, `docs/design-system.md`,
+   `docs/design.md`). If one exists, **do not create another**: tell the
+   developer which file was found and compare its stamp
+   (`<!-- wap-design-system: v<N> -->`) with `assets/design-system.md`; if it is
+   older or has no stamp, ask before replacing it. If none exists, copy
+   `assets/design-system.md` → `docs/design-system.md` with the stamp at the top.
+   The copy is **pinned**: to update it later, re-run this step deliberately
+   (there is no automatic update). For `--kotlin` / `--kotlin-maven` /
+   `--python`, skip this step (no UI).
 
 6. **Report** exactly which files were written/changed, and end by telling the
-   developer the next steps: run the normal spec-kit cycle; after the first
-   `/speckit-implement`, run `/harness-patterns` once.
+   developer the next steps:
+   - the normal spec-kit cycle — the gate runs after `/speckit-implement`;
+   - **outside spec-kit** (work straight on a branch): run the gate before
+     commit/push — `bash .specify/extensions/harness/scripts/bash/gate.sh` — and
+     add it to the PR workflow (see `harness/README.md`);
+   - after the first implemented feature, run `/speckit-harness-patterns` once
+     (only if the patterns file is still the empty template).
 
 ## Rules
 
-- Never overwrite an existing `harness/`, `docs/patterns.md`, or
-  `docs/design-system.md` without telling the developer and getting a yes.
-- The four sensor commands come from the preset — do not invent commands for a
-  stack that has no preset. If the developer needs a fourth stack, they add a
+- Never overwrite an existing `harness/`, patterns file or design system without
+  telling the developer and getting a yes.
+- The four sensor commands come from the preset, adjusted only to commands that
+  **already exist in the project** (step 2) or `skip`. Do not invent commands for
+  a stack that has no preset. If the developer needs another stack, they add a
   `presets/<stack>.yml` first.

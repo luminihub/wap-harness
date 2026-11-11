@@ -3,14 +3,14 @@ schema_version: "1.0"
 extension:
   id: harness
   name: "wap-harness — automated validators"
-  version: "0.1.0"
+  version: "0.2.0"
   description: "Runs a config-driven gate (contract, build, lint, test+coverage) automatically after implement, and reports pass/fail. No autonomous loop — red returns to human decision."
   author: WAP/WAAW
   license: MIT
 
 requires:
-  # adjust to the spec-kit version in use (see build plan, Fase 0)
-  speckit_version: ">=0.2.0"
+  # tested with spec-kit 0.16.4
+  speckit_version: ">=0.16.0"
 
 provides:
   commands:
@@ -22,12 +22,12 @@ provides:
       description: "Write harness.config.yml for the project's stack and seed harness files"
     - name: speckit.harness.patterns
       file: commands/speckit.harness.patterns.md
-      description: "Extract code patterns from the project's own implemented code into docs/patterns.md"
+      description: "Extract code patterns from the project's own implemented code into .specify/memory/patterns.md"
 
   config:
     - name: "harness.config.yml"
       template: "config-template.yml"
-      description: "The four sensor slots + coverage source; specialized per stack by /harness-setup"
+      description: "The four sensor slots + coverage source (+ optional env); specialized per stack by /speckit-harness-setup"
       required: false
 
 hooks:

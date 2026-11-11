@@ -4,6 +4,10 @@
 # Reads harness.config.yml, runs the four sensors in order, prints a table,
 # and exits 0 if all pass or 1 if any fail. Pass/fail is decided SOLELY by
 # each sensor's exit code. Coverage % is read for display only, never fatal.
+#
+# A sensor set to `skip` is not run and does not fail the gate, but is shown
+# as "pulado" (and in the final line) so a missing suite is never mistaken
+# for a passing one.
 set -euo pipefail
 
 CONFIG="${HARNESS_CONFIG:-harness.config.yml}"
@@ -11,16 +15,35 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ ! -f "$CONFIG" ]]; then
   echo "harness: config não encontrado: $CONFIG" >&2
-  echo "rode /harness-setup para criá-lo." >&2
+  echo "rode /speckit-harness-setup para criá-lo." >&2
   exit 2
 fi
 
 # --- minimal YAML reader for this file's fixed shape ---
-# Reads one scalar under a known unique key; strips surrounding quotes/space.
-cfg() {
-  sed -n "s/^[[:space:]]*$1:[[:space:]]*//p" "$CONFIG" | head -n1 \
-    | sed "s/^[\"']//; s/[\"'][[:space:]]*$//; s/[[:space:]]*$//"
+# Reads one scalar under a known unique key; strips surrounding quotes/space
+# and trailing comments.
+unquote() {
+  sed "s/[[:space:]]#.*$//; s/^[\"']//; s/[\"'][[:space:]]*$//; s/[[:space:]]*$//"
 }
+cfg() {
+  sed -n "s/^[[:space:]]*$1:[[:space:]]*//p" "$CONFIG" | head -n1 | unquote
+}
+
+# --- optional `env:` block: KEY: value lines exported for the sensors ---
+# (e.g. JAVA_HOME when the project needs a JDK other than the machine default)
+while IFS= read -r line; do
+  key="${line%%:*}"; key="${key//[[:space:]]/}"
+  val="$(printf '%s' "${line#*:}" | sed 's/^[[:space:]]*//' | unquote)"
+  [[ -z "$key" || -z "$val" ]] && continue
+  if [[ "$key" == "JAVA_HOME" && ! -d "$val" ]]; then
+    echo "harness: env.JAVA_HOME não existe nesta máquina ($val) — mantendo o JDK atual" >&2
+    continue
+  fi
+  export "$key=$val"
+done < <(awk '/^env:/{f=1;next} /^[^[:space:]#]/{f=0} f && /^[[:space:]]+[A-Za-z_][A-Za-z0-9_]*:/' "$CONFIG")
+if [[ -n "${JAVA_HOME:-}" && -d "$JAVA_HOME/bin" ]]; then
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
 
 SENSOR_CONTRATO="$(cfg contrato)"
 SENSOR_BUILD="$(cfg build)"
@@ -30,10 +53,18 @@ COV_SOURCE="$(cfg source)"
 COV_FIELD="$(cfg field)"
 COV_MIN="$(cfg min)"
 
+LOG_DIR="${TMPDIR:-/tmp}"
+skipped=()
+
 run_sensor() {
-  local label="$1" cmd="$2" log="/tmp/harness-$1.log"
+  local label="$1" cmd="$2" log="$LOG_DIR/harness-$1.log"
   if [[ -z "$cmd" ]]; then
     printf '  %-10s —  (não configurado)\n' "$label"
+    return 0
+  fi
+  if [[ "$cmd" == "skip" ]]; then
+    printf '  %-10s ⏭  pulado (skip no harness.config.yml)\n' "$label"
+    skipped+=("$label")
     return 0
   fi
   if eval "$cmd" >"$log" 2>&1; then
@@ -60,7 +91,11 @@ fi
 
 echo "───────────────────────────────────────────────"
 if [[ "$fail" -eq 0 ]]; then
-  echo "resultado: ✅ verde"
+  if [[ "${#skipped[@]}" -gt 0 ]]; then
+    echo "resultado: ✅ verde — com sensor pulado: ${skipped[*]}"
+  else
+    echo "resultado: ✅ verde"
+  fi
   exit 0
 fi
 echo "resultado: ❌ vermelho"

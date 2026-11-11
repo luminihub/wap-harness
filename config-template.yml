@@ -1,10 +1,14 @@
 # wap-harness — gate configuration.
-# Copied to ./harness.config.yml on install, then specialized by /harness-setup.
+# Copied to ./harness.config.yml on install, then specialized by /speckit-harness-setup.
 #
 # The gate runs these four commands IN ORDER and passes only if every one
 # exits 0. Pass/fail is decided solely by exit code. Coverage % is read for
 # DISPLAY only — the eval sensor itself is responsible for failing below the
 # threshold (e.g. Vitest thresholds, jacoco rules).
+#
+# A sensor set to `skip` is not run and does not fail the gate, but is shown as
+# "pulado" — use it while the project has no lint/test suite yet, never to hide
+# a failing one.
 
 sensors:
   contrato: "bash harness/constitution-check.sh"   # objective rule checks (grep)
@@ -16,3 +20,8 @@ coverage:
   source: ""        # path to the coverage report the eval sensor produces
   field:  "lines"   # which metric to display
   min:    80        # display-only threshold (controls colour/label, not pass/fail)
+
+# Optional: environment for the sensors (KEY: value). JAVA_HOME also goes
+# first on PATH — use it when the project needs a JDK other than the default.
+env:
+  # JAVA_HOME: "/usr/lib/jvm/java-25-openjdk-amd64"

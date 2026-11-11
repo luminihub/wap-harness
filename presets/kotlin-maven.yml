@@ -1,0 +1,18 @@
+# Preset: Kotlin / Spring Boot / Maven (back-end)
+# Espera no pom.xml:
+#   - ktlint-maven-plugin (com.github.gantsign.maven) — senão use `gate: skip`
+#   - jacoco-maven-plugin com a regra de cobertura em `jacoco:check` — senão
+#     troque o eval por "mvn -B test" e deixe `coverage.source` vazio
+# JDK: os sensores rodam com o JAVA_HOME do bloco `env` (o projeto pode exigir
+# um JDK diferente do padrão da máquina).
+sensors:
+  contrato: "bash harness/constitution-check.sh"
+  build:    "mvn -B -q -DskipTests package"
+  gate:     "mvn -B -q ktlint:check"
+  eval:     "mvn -B test jacoco:report jacoco:check"
+coverage:
+  source: "target/site/jacoco/jacoco.csv"
+  field:  "LINE"
+  min:    80
+env:
+  # JAVA_HOME: "/usr/lib/jvm/java-25-openjdk-amd64"
