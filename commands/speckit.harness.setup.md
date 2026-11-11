@@ -38,11 +38,15 @@ referenced below live inside it.
    - **vue / react:** read `scripts` in `package.json`. If the preset's script
      name is missing but an equivalent exists, propose the existing one
      (e.g. `typecheck` for `type-check`, `lint` for `lint:check`). If there is no
-     test script / no Vitest yet, propose `eval: skip` and an empty
-     `coverage.source`.
+     test suite yet, **offer to set it up** with the recipe in
+     `seeds/testes/react/` (Vitest + Testing Library, versions compatible with the
+     project's Node, `test`/`test:watch`/`test:cov` scripts, `npm test` in the PR
+     workflow) and then use `eval: "npm run test:cov"`. Only if the developer
+     declines, propose `eval: skip` and an empty `coverage.source`.
    - **kotlin-maven:** read `pom.xml`. No `ktlint-maven-plugin` (or detekt) →
-     propose `gate: skip`. No `jacoco-maven-plugin` → propose `eval: "mvn -B test"`
-     and an empty `coverage.source`. If the project requires a specific JDK
+     propose `gate: skip`. No `jacoco-maven-plugin` → **offer to add it** from
+     `seeds/testes/kotlin-maven/jacoco-plugin.xml` (minimum = current coverage);
+     if declined, propose `eval: "mvn -B test"` and an empty `coverage.source`. If the project requires a specific JDK
      (`java.version` / `maven.compiler.release` / `kotlin.compiler.jvmTarget` in
      the pom, or a note in CLAUDE.md/README), fill `env.JAVA_HOME`.
    - **kotlin (Gradle):** same checks for `ktlint` / `jacoco` in the build file.
@@ -88,6 +92,10 @@ referenced below live inside it.
      (only if the patterns file is still the empty template).
 
 ## Rules
+
+- **Coverage is a ratchet.** When a threshold is set (Vitest `thresholds`,
+  jacoco `minimum`), start at the project's current coverage, never at a value
+  that fails on day one, and never lower it later.
 
 - Never overwrite an existing `harness/`, patterns file or design system without
   telling the developer and getting a yes.

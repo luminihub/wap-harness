@@ -22,3 +22,10 @@
 4. **The gate is a validator, not a loop.** It runs once after implementation
    and reports. It never auto-corrects, and its thresholds are never lowered to
    force a pass.
+
+5. **Tests are mandatory and written first (TDD).** Every feature starts with a
+   test for the expected behaviour, and every bug fix with a test that
+   reproduces the bug; the test is run and seen failing for the right reason
+   before the production code is written. A coverage threshold only goes up
+   (ratchet): it starts at the project's current coverage and rises with each
+   delivery.

@@ -1,0 +1,31 @@
+<!--
+  jacoco-maven-plugin para o preset kotlin-maven (vai em <build><plugins> do pom.xml).
+  Gera target/site/jacoco/jacoco.csv (lido pelo gate) e reprova abaixo do limite em `jacoco:check`.
+  Catraca: comece o `minimum` na cobertura atual do projeto (arredondada para baixo) e suba a cada
+  entrega — nunca abaixe. Use a versão mais recente publicada há pelo menos duas semanas.
+-->
+<plugin>
+  <groupId>org.jacoco</groupId>
+  <artifactId>jacoco-maven-plugin</artifactId>
+  <version><!-- versão --></version>
+  <executions>
+    <execution>
+      <id>prepare-agent</id>
+      <goals><goal>prepare-agent</goal></goals>
+    </execution>
+  </executions>
+  <configuration>
+    <rules>
+      <rule>
+        <element>BUNDLE</element>
+        <limits>
+          <limit>
+            <counter>LINE</counter>
+            <value>COVEREDRATIO</value>
+            <minimum><!-- cobertura atual, ex.: 0.60 --></minimum>
+          </limit>
+        </limits>
+      </rule>
+    </rules>
+  </configuration>
+</plugin>

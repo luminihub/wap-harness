@@ -74,6 +74,21 @@ O gate roda os quatro em ordem e passa só se **todos saírem 0**. Verde/vermelh
 quem reprova abaixo do limite é o próprio sensor `eval` (thresholds do Vitest,
 regras do jacoco, `--cov-fail-under`).
 
+## Testes: obrigatórios, em TDD
+
+O artigo da constituição semeado pelo setup exige **teste antes do código (TDD)**
+e cobertura em **catraca** (o limite começa na cobertura atual e só sobe). O
+checklist do avaliador confere que o teste do bug falhou antes da correção.
+
+Projeto ainda sem suíte: o setup oferece montar —
+- **React/Vite:** `seeds/testes/react/` (Vitest + Testing Library, `vitest.config.ts`
+  que reaproveita o `vite.config.ts`, versões por versão de Node, contorno do bug do
+  npm 10.9 com os peers do Vitest);
+- **Kotlin/Maven:** `seeds/testes/kotlin-maven/jacoco-plugin.xml` (gera o
+  `jacoco.csv` lido pelo gate).
+
+`skip` fica só para quando o desenvolvedor recusa — e aparece como "pulado".
+
 ## Fora do Spec Kit (trabalho direto na branch)
 
 O hook `after_implement` só dispara dentro do `/speckit-implement`. Quando o time
@@ -105,6 +120,7 @@ wap-harness/
 └── seeds/                   # copiado pro projeto pelo setup
     ├── harness/             # README, evaluator-checklist, constitution-check.sh
     ├── docs/patterns.md     # template vazio (vai pra .specify/memory/patterns.md se não existir)
+    ├── testes/              # receitas de suíte: react/ (Vitest) · kotlin-maven/ (jacoco)
     └── constitution-article.md
 ```
 

@@ -1,9 +1,10 @@
 # Preset: React 19 / TypeScript / Vite / Vitest (front-end)
 # Espera no package.json:
-#   "type-check": "tsc -b --noEmit"
-#   "lint:check": "eslint ."
+#   "type-check": "tsc -b --noEmit"   (o setup aceita o equivalente que existir, ex. "typecheck")
+#   "lint:check": "eslint ."          (ex. "lint")
 #   "test:cov":   "vitest run --coverage"
-# e no vitest.config: coverage.reporter incluindo 'json-summary' + thresholds.
+# e no vitest.config: coverage.reporter incluindo 'json-summary' (+ thresholds em catraca).
+# Projeto sem testes: receita em seeds/testes/react/ (versões compatíveis com o Node 20 inclusas).
 sensors:
   contrato: "bash harness/constitution-check.sh"
   build:    "npm run type-check"
