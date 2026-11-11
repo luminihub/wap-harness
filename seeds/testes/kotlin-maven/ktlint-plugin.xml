@@ -1,0 +1,19 @@
+<!--
+  ktlint-maven-plugin para o preset kotlin-maven (vai em <build><plugins> do pom.xml) — o sensor `gate`
+  roda `mvn -B -q ktlint:check`. Use a versão mais recente publicada há pelo menos duas semanas.
+  Projeto existente: rode `mvn ktlint:format` uma vez no PR que inclui o plugin, para o código atual
+  já entrar no padrão (commit só de formatação, separado das mudanças de comportamento).
+-->
+<plugin>
+  <groupId>com.github.gantsign.maven</groupId>
+  <artifactId>ktlint-maven-plugin</artifactId>
+  <version><!-- versão --></version>
+  <configuration>
+    <sourceRoots>
+      <sourceRoot>${project.basedir}/src/main/kotlin</sourceRoot>
+    </sourceRoots>
+    <testSourceRoots>
+      <testSourceRoot>${project.basedir}/src/test/kotlin</testSourceRoot>
+    </testSourceRoots>
+  </configuration>
+</plugin>

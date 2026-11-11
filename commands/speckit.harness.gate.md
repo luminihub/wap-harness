@@ -29,9 +29,9 @@ directly — see `harness/README.md` — before a commit or in the PR workflow).
   pass. If a sensor command is wrong, that is a setup problem to raise, not to
   paper over.
 
-- **`skip` is not a pass.** A sensor set to `skip` shows as "pulado" and the
-  final line says "verde — com sensor pulado: …". Always tell the developer
-  which sensors were skipped; never report it as "all tests passed".
+- **Every sensor is mandatory.** An empty (or `skip`) sensor fails the gate as
+  "não configurado". The fix is to set up the missing lint/test suite (run
+  `/speckit-harness-setup`), never to blank or skip the sensor.
 
 ## Ordering note
 

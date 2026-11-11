@@ -38,21 +38,23 @@ referenced below live inside it.
    - **vue / react:** read `scripts` in `package.json`. If the preset's script
      name is missing but an equivalent exists, propose the existing one
      (e.g. `typecheck` for `type-check`, `lint` for `lint:check`). If there is no
-     test suite yet, **offer to set it up** with the recipe in
-     `seeds/testes/react/` (Vitest + Testing Library, versions compatible with the
-     project's Node, `test`/`test:watch`/`test:cov` scripts, `npm test` in the PR
-     workflow) and then use `eval: "npm run test:cov"`. Only if the developer
-     declines, propose `eval: skip` and an empty `coverage.source`.
+     test suite yet, **set it up** with the recipe in `seeds/testes/react/`
+     (Vitest + Testing Library, versions compatible with the project's Node,
+     `test`/`test:watch`/`test:cov` scripts, `npm test` in the PR workflow) and use
+     `eval: "npm run test:cov"`. No lint script → set up ESLint the same way.
    - **kotlin-maven:** read `pom.xml`. No `ktlint-maven-plugin` (or detekt) →
-     propose `gate: skip`. No `jacoco-maven-plugin` → **offer to add it** from
-     `seeds/testes/kotlin-maven/jacoco-plugin.xml` (minimum = current coverage);
-     if declined, propose `eval: "mvn -B test"` and an empty `coverage.source`. If the project requires a specific JDK
+     **add it** from `seeds/testes/kotlin-maven/ktlint-plugin.xml` (and run
+     `mvn ktlint:format` once, as its own formatting-only commit). No
+     `jacoco-maven-plugin` → **add it** from
+     `seeds/testes/kotlin-maven/jacoco-plugin.xml` (minimum = current coverage).
+     If the project requires a specific JDK
      (`java.version` / `maven.compiler.release` / `kotlin.compiler.jvmTarget` in
      the pom, or a note in CLAUDE.md/README), fill `env.JAVA_HOME`.
    - **kotlin (Gradle):** same checks for `ktlint` / `jacoco` in the build file.
-   - Show the developer the four resolved sensor commands (and any `skip` /
-     `env`) and let them confirm/adjust. `skip` is shown by the gate as
-     "pulado" — it never looks like a passing suite.
+   - Show the developer the four resolved sensor commands (and `env`) and let
+     them confirm/adjust. **All four are mandatory:** an empty or `skip` sensor
+     fails the gate ("não configurado"), so never leave one blank — set up what
+     is missing instead.
 
 3. **Seed the harness files** (only if not already present — never clobber):
    - `seeds/harness/` → `harness/` (`README.md`, `evaluator-checklist.md`,
@@ -100,6 +102,6 @@ referenced below live inside it.
 - Never overwrite an existing `harness/`, patterns file or design system without
   telling the developer and getting a yes.
 - The four sensor commands come from the preset, adjusted only to commands that
-  **already exist in the project** (step 2) or `skip`. Do not invent commands for
+  **already exist in the project** or that this setup installs (step 2). Do not invent commands for
   a stack that has no preset. If the developer needs another stack, they add a
   `presets/<stack>.yml` first.

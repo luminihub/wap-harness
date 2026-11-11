@@ -19,8 +19,8 @@ bash .specify/extensions/harness/scripts/bash/gate.sh        # unix / git bash
 pwsh .specify/extensions/harness/scripts/powershell/gate.ps1 # windows
 ```
 
-Exit 0 = verde, 1 = vermelho, 2 = config faltando. A sensor set to `skip` is
-shown as "pulado" and does not fail the gate.
+Exit 0 = verde, 1 = vermelho, 2 = config faltando. Every sensor is mandatory:
+an empty one fails as "não configurado".
 
 ## Outside spec-kit (work straight on a branch)
 

@@ -4,9 +4,8 @@
 # and exits 0 if all pass or 1 if any fail. Pass/fail is decided SOLELY by
 # each sensor's exit code. Coverage % is read for display only, never fatal.
 #
-# A sensor set to `skip` is not run and does not fail the gate, but is shown
-# as "pulado" (and in the final line) so a missing suite is never mistaken
-# for a passing one.
+# Every sensor is mandatory: an empty (or `skip`) sensor FAILS the gate as
+# "não configurado" — a project without build, lint or tests is never green.
 
 $ErrorActionPreference = "Stop"
 $Config = if ($env:HARNESS_CONFIG) { $env:HARNESS_CONFIG } else { "harness.config.yml" }
@@ -57,18 +56,12 @@ $sensors = [ordered]@{
 $covSource = Get-Cfg "source"
 $covField  = Get-Cfg "field"
 $covMin    = Get-Cfg "min"
-$skipped   = @()
 
 function Invoke-Sensor([string]$label, [string]$cmd) {
     $log = Join-Path $env:TEMP "harness-$label.log"
-    if ([string]::IsNullOrWhiteSpace($cmd)) {
-        "  {0,-10} —  (não configurado)" -f $label | Write-Host
-        return $true
-    }
-    if ($cmd -eq "skip") {
-        "  {0,-10} pulado (skip no harness.config.yml)" -f $label | Write-Host
-        $script:skipped += $label
-        return $true
+    if ([string]::IsNullOrWhiteSpace($cmd) -or $cmd -eq "skip") {
+        "  {0,-10} FAIL   não configurado (todo sensor é obrigatório — rode /speckit-harness-setup)" -f $label | Write-Host
+        return $false
     }
     cmd /c "$cmd" *> $log
     if ($LASTEXITCODE -eq 0) {
@@ -104,11 +97,7 @@ if ($covSource -and (Test-Path $covSource)) {
 
 Write-Host "-------------------------------------------------"
 if (-not $fail) {
-    if ($skipped.Count -gt 0) {
-        Write-Host ("resultado: verde — com sensor pulado: " + ($skipped -join " "))
-    } else {
-        Write-Host "resultado: verde"
-    }
+    Write-Host "resultado: verde"
     exit 0
 }
 Write-Host "resultado: vermelho"

@@ -55,19 +55,17 @@ coverage:
   min:    80
 ```
 
-Opcionais no mesmo arquivo:
+Opcional no mesmo arquivo:
 
 ```yaml
-sensors:
-  eval: skip            # projeto ainda sem suíte: aparece como "pulado", não reprova
 env:
   JAVA_HOME: "/usr/lib/jvm/java-25-openjdk-amd64"   # JDK do projeto (vai primeiro no PATH)
 ```
 
-`skip` é para quando o projeto ainda não tem lint/teste — o gate mostra
-"pulado" e termina em "verde — com sensor pulado: …", nunca como se a suíte
-tivesse passado. `env.JAVA_HOME` que não existe na máquina (ex.: no CI) é
-ignorado com aviso.
+`env.JAVA_HOME` que não existe na máquina (ex.: no CI) é ignorado com aviso.
+
+**Os quatro sensores são obrigatórios.** Sensor vazio (ou `skip`) reprova o gate
+como "não configurado" — projeto sem build, lint ou teste nunca fica verde.
 
 O gate roda os quatro em ordem e passa só se **todos saírem 0**. Verde/vermelho
 é decidido puramente pelo exit code. O % de cobertura é lido **só pra exibir** —
@@ -80,14 +78,14 @@ O artigo da constituição semeado pelo setup exige **teste antes do código (TD
 e cobertura em **catraca** (o limite começa na cobertura atual e só sobe). O
 checklist do avaliador confere que o teste do bug falhou antes da correção.
 
-Projeto ainda sem suíte: o setup oferece montar —
+Projeto ainda sem suíte ou sem lint: o setup **monta** —
 - **React/Vite:** `seeds/testes/react/` (Vitest + Testing Library, `vitest.config.ts`
   que reaproveita o `vite.config.ts`, versões por versão de Node, contorno do bug do
   npm 10.9 com os peers do Vitest);
 - **Kotlin/Maven:** `seeds/testes/kotlin-maven/jacoco-plugin.xml` (gera o
-  `jacoco.csv` lido pelo gate).
+  `jacoco.csv` lido pelo gate) e `ktlint-plugin.xml` (lint).
 
-`skip` fica só para quando o desenvolvedor recusa — e aparece como "pulado".
+Não existe sensor "pulado": o que falta é instalado, não desligado.
 
 ## Fora do Spec Kit (trabalho direto na branch)
 
@@ -120,7 +118,7 @@ wap-harness/
 └── seeds/                   # copiado pro projeto pelo setup
     ├── harness/             # README, evaluator-checklist, constitution-check.sh
     ├── docs/patterns.md     # template vazio (vai pra .specify/memory/patterns.md se não existir)
-    ├── testes/              # receitas de suíte: react/ (Vitest) · kotlin-maven/ (jacoco)
+    ├── testes/              # receitas: react/ (Vitest) · kotlin-maven/ (jacoco, ktlint)
     └── constitution-article.md
 ```
 

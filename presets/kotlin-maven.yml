@@ -1,8 +1,9 @@
 # Preset: Kotlin / Spring Boot / Maven (back-end)
 # Espera no pom.xml:
-#   - ktlint-maven-plugin (com.github.gantsign.maven) — senão use `gate: skip`
-#   - jacoco-maven-plugin com a regra de cobertura em `jacoco:check` — senão
-#     troque o eval por "mvn -B test" e deixe `coverage.source` vazio
+#   - ktlint-maven-plugin (com.github.gantsign.maven) — o setup inclui a partir de
+#     seeds/testes/kotlin-maven/ktlint-plugin.xml se faltar
+#   - jacoco-maven-plugin com a regra de cobertura em `jacoco:check` — o setup inclui
+#     a partir de seeds/testes/kotlin-maven/jacoco-plugin.xml se faltar
 # JDK: os sensores rodam com o JAVA_HOME do bloco `env` (o projeto pode exigir
 # um JDK diferente do padrão da máquina).
 sensors:

@@ -5,9 +5,8 @@
 # and exits 0 if all pass or 1 if any fail. Pass/fail is decided SOLELY by
 # each sensor's exit code. Coverage % is read for display only, never fatal.
 #
-# A sensor set to `skip` is not run and does not fail the gate, but is shown
-# as "pulado" (and in the final line) so a missing suite is never mistaken
-# for a passing one.
+# Every sensor is mandatory: an empty (or `skip`) sensor FAILS the gate as
+# "não configurado" — a project without build, lint or tests is never green.
 set -euo pipefail
 
 CONFIG="${HARNESS_CONFIG:-harness.config.yml}"
@@ -54,18 +53,12 @@ COV_FIELD="$(cfg field)"
 COV_MIN="$(cfg min)"
 
 LOG_DIR="${TMPDIR:-/tmp}"
-skipped=()
 
 run_sensor() {
   local label="$1" cmd="$2" log="$LOG_DIR/harness-$1.log"
-  if [[ -z "$cmd" ]]; then
-    printf '  %-10s —  (não configurado)\n' "$label"
-    return 0
-  fi
-  if [[ "$cmd" == "skip" ]]; then
-    printf '  %-10s ⏭  pulado (skip no harness.config.yml)\n' "$label"
-    skipped+=("$label")
-    return 0
+  if [[ -z "$cmd" || "$cmd" == "skip" ]]; then
+    printf '  %-10s ❌ não configurado (todo sensor é obrigatório — rode /speckit-harness-setup)\n' "$label"
+    return 1
   fi
   if eval "$cmd" >"$log" 2>&1; then
     printf '  %-10s ✅ ok\n' "$label"
@@ -91,11 +84,7 @@ fi
 
 echo "───────────────────────────────────────────────"
 if [[ "$fail" -eq 0 ]]; then
-  if [[ "${#skipped[@]}" -gt 0 ]]; then
-    echo "resultado: ✅ verde — com sensor pulado: ${skipped[*]}"
-  else
-    echo "resultado: ✅ verde"
-  fi
+  echo "resultado: ✅ verde"
   exit 0
 fi
 echo "resultado: ❌ vermelho"

@@ -6,9 +6,9 @@
 # DISPLAY only — the eval sensor itself is responsible for failing below the
 # threshold (e.g. Vitest thresholds, jacoco rules).
 #
-# A sensor set to `skip` is not run and does not fail the gate, but is shown as
-# "pulado" — use it while the project has no lint/test suite yet, never to hide
-# a failing one.
+# All four sensors are mandatory: an empty one fails the gate ("não
+# configurado"). /speckit-harness-setup fills them — and sets up lint/tests
+# when the project has none.
 
 sensors:
   contrato: "bash harness/constitution-check.sh"   # objective rule checks (grep)
